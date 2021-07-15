@@ -1,0 +1,20 @@
+// Note: You should install VSCode Extension: REST Client, first.
+
+### WithoutCipherPayload Example POST
+POST http://localhost:5000/api/example HTTP/1.1
+content-type: application/json
+
+{}
+
+### WithCipherPayload Example POST
+POST http://localhost:8000/api/example HTTP/1.1
+content-type: application/json
+
+# The encrypted body of {\"firstname\":\"Chinnawat\",\"lasname\":\"Chimdee\"}
+{"payload": "tpkWPEI6F/nfgUjjtwyKSUHhNwBF3fZilleEukZ5GRazPN4rbfuqOasHeNN3OpDG"} 
+
+# The encrypted body of {\"firstname\":\"A\",\"lasname\":\"Chimdee\"}
+# {"payload": "Tg2e6D04NvsIcjUda4ObeqV2zDq1mIch66s1IGQwUWRP/BKiixwjcR0eD8tPzp4M"}
+
+# The encrypted body of {\"key\":\"tax_id\",\"value\":\"1234567890121\"}
+# {"payload": "yBBGT/q/70ACmgUUwwQF9lB74yHckxSGwzQzHsBgHvGgTRqw4Srj17TgvXK/4vYE"}
