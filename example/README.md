@@ -24,6 +24,9 @@
     CipherPayload-Encrypted--"{ payload:AES_ENCRYPTED }"-->Response
 ```
 
+Alternative mermaid diagrams
+[Alternative mermaid diagrams](./image/mermaid.png)
+
 ## 🏷 Versions
 
 v0.1.0
