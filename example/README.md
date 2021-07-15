@@ -25,7 +25,7 @@
 ```
 
 Alternative mermaid diagrams
-[Alternative mermaid diagrams](./image/mermaid.png)
+![Alternative mermaid diagrams](./image/mermaid.png)
 
 ## 🏷 Versions
 
