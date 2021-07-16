@@ -4,17 +4,26 @@
 POST http://localhost:5000/api/example HTTP/1.1
 content-type: application/json
 
-{}
+{
+  "firstname": "Chinnawat",
+  "lastname": "Chimdee"
+}
 
 ### WithCipherPayload Example POST
 POST http://localhost:8000/api/example HTTP/1.1
 content-type: application/json
 
-# The encrypted body of {\"firstname\":\"Chinnawat\",\"lasname\":\"Chimdee\"}
-{"payload": "tpkWPEI6F/nfgUjjtwyKSUHhNwBF3fZilleEukZ5GRazPN4rbfuqOasHeNN3OpDG"} 
+# The encrypted body of {\"firstname\":\"Chinnawat\",\"lastname\":\"Chimdee\"}
+# ...Should reply: { "payload": "tpkWPEI6F/nfgUjjtwyKSUf1erxPL6rQt8jG3RitQ1KpvRALfR5YAgQ0CXYkrwLfTid6VdK3SNlffuu/kvI7Hj7br0ur01TUFUWxQ9cl+8U=" }
+# ...Which means: {\"firstname\":\"Chinnawat [Modified]\",\"lastname\":\"Chimdee [Modified]\"}
+{"payload": "FDp1Dl31zGx5nRXFNKihB+k3ly/L7HI9tlHycbKVRwhaf3RRdyFGviuntEZqst0/"} 
 
-# The encrypted body of {\"firstname\":\"A\",\"lasname\":\"Chimdee\"}
-# {"payload": "Tg2e6D04NvsIcjUda4ObeqV2zDq1mIch66s1IGQwUWRP/BKiixwjcR0eD8tPzp4M"}
+# The encrypted body of {\"firstname\":\"Wat\",\"lastname\":\"Chimdee\"}
+# ...Should reply: { "payload": "gVnkw9TzoWPhT7rpImJPtA/G8GCvSSPyFNF7Z3dNX83Vr38CkKs+VLFbxbo283KrwHdqcBwX0FDRS88Fxua82Q==" }
+# ...Which means: {\"firstname\":\"Wat [Modified]\",\"lastname\":\"Chimdee [Modified]\"}
+# {"payload": "xnsOKHZTn4WYVWXt9VK4JT+XK9/oUNAbWVjGBJVeZ1uUEzoeWV4Zcu3v+F/SqCNm"}
 
 # The encrypted body of {\"key\":\"tax_id\",\"value\":\"1234567890121\"}
-# {"payload": "yBBGT/q/70ACmgUUwwQF9lB74yHckxSGwzQzHsBgHvGgTRqw4Srj17TgvXK/4vYE"}
+# ...Should reply: { "payload": "Y1E19OBvnC+IRwwdrGsVxfI0rvQ8sfkqFtlL0D5NHfauEddy13a9YWEwJeSfC1iiwjPHOwkfb/VVLKw12E1KDQ==" }
+# ...Which means: {\"key\":\"tax_id [Modified]\",\"value\":\"1234567890121 [Modified]\"}
+# {"payload": "Be/0wN/7rRLYMONwySAWH0NfSNckuaYXsmb1JgZDFRsNnum+2JGnMTxuNa3iECEe"}

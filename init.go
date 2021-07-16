@@ -18,13 +18,23 @@ func New(config ...Config) fiber.Handler {
 	panicResponseHeader := serviceName + ": Some configuration is missing: "
 
 	// config is required
-	if cfg.AESKey == nil || len(cfg.AESKey) == 0 {
-		panic(panicResponseHeader + "`AESKey` is required.")
+	if len(cfg.KeyPairs.AESKeyForEncrypt) == 0 {
+		panic(panicResponseHeader + "`AESKeyForEncrypt` is required.")
 	}
 
 	// config is required
-	if cfg.AESIV == nil || len(cfg.AESIV) == 0 {
-		panic(panicResponseHeader + "`AESIV` is required.")
+	if len(cfg.KeyPairs.AESIVForEncrypt) == 0 {
+		panic(panicResponseHeader + "`AESIVForEncrypt` is required.")
+	}
+
+	// config is required
+	if len(cfg.KeyPairs.AESKeyForDecrypt) == 0 {
+		panic(panicResponseHeader + "`AESKeyForDecrypt` is required.")
+	}
+
+	// config is required
+	if len(cfg.KeyPairs.AESIVForDecrypt) == 0 {
+		panic(panicResponseHeader + "`AESIVForDecrypt` is required.")
 	}
 
 	return func(c *fiber.Ctx) error {
@@ -55,7 +65,7 @@ func New(config ...Config) fiber.Handler {
 		logger.printf("debug", "Request:", reqBody.Payload)
 
 		// Payload Decrypting
-		encrypterDecrypter := NewAESEncryption(cfg.AESKey, cfg.AESIV)
+		encrypterDecrypter := NewAESEncryption(cfg.KeyPairs, cfg.DebugMode)
 		decryptedPayload, err := encrypterDecrypter.Decrypt(reqBody.Payload)
 		logger.printf("debug", "Decrypted:", decryptedPayload)
 

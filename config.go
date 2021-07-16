@@ -8,11 +8,8 @@ type Config struct {
 	// Optional. Default: nil
 	Next func(c *fiber.Ctx) bool
 
-	// Required. Default: nil
-	AESKey []byte
-
-	// Required. Default: nil
-	AESIV []byte
+	// Required. Default: KeyPairs{}
+	KeyPairs KeyPairs
 
 	// Optional. Default: OPTIONS, POST, PUT, DELETE
 	AllowMethod []string
@@ -31,9 +28,8 @@ type Config struct {
 }
 
 var ConfigDefault = Config{
-	Next:   nil,
-	AESKey: nil,
-	AESIV:  nil,
+	Next:     nil,
+	KeyPairs: KeyPairs{},
 	AllowMethod: []string{
 		fiber.MethodOptions,
 		fiber.MethodPost,
@@ -78,6 +74,13 @@ func configDefault(config ...Config) Config {
 
 type PayloadBody struct {
 	Payload string `json:"payload"`
+}
+
+type KeyPairs struct {
+	AESKeyForEncrypt []byte
+	AESIVForEncrypt  []byte
+	AESKeyForDecrypt []byte
+	AESIVForDecrypt  []byte
 }
 
 func BadRequestResponse(c *fiber.Ctx, msg string) error { // 400

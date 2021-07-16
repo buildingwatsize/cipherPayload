@@ -7,8 +7,12 @@ import (
 )
 
 var (
-	aesKey []byte
-	aesIV  []byte
+	aesKeyForEncrypt []byte
+	aesIVForEncrypt  []byte
+	aesKeyForDecrypt []byte
+	aesIVForDecrypt  []byte
+
+	keys KeyPairs
 )
 
 func init() {
@@ -16,8 +20,17 @@ func init() {
 }
 
 func setAValidConfig() {
-	aesKey = []byte("12345678901234567890123456789012")
-	aesIV = []byte("1234567890123456")
+	aesKeyForEncrypt = []byte("12345678901234567890123456789012")
+	aesIVForEncrypt = []byte("1234567890123456")
+	aesKeyForDecrypt = []byte("67890123456789012345678901234567")
+	aesIVForDecrypt = []byte("6789012345678901")
+
+	keys = KeyPairs{
+		aesKeyForEncrypt,
+		aesIVForEncrypt,
+		aesKeyForDecrypt,
+		aesIVForDecrypt,
+	}
 }
 
 type testCaseEncryption struct {
@@ -46,7 +59,7 @@ func TestEncryptionAES(t *testing.T) {
 			input := test.input
 			expected := test.expected
 
-			d := NewAESEncryption(aesKey, aesIV, false)
+			d := NewAESEncryption(keys, false)
 			actual, _ := d.Encrypt(input)
 
 			require.NotEqual(t, expected, actual)
@@ -55,17 +68,17 @@ func TestEncryptionAES(t *testing.T) {
 
 	setAValidConfig()
 	// Fail Case
-	aesSecretKeyBackup := aesKey
+	aesKeyPairsBackup := keys
 	t.Run("Fail Case", func(t *testing.T) {
-		aesKey = []byte("")
+		keys = KeyPairs{}
 		input := "smtg"
 
-		d := NewAESEncryption(aesKey, aesIV)
+		d := NewAESEncryption(keys)
 		_, err := d.Encrypt(input)
 
 		require.Error(t, err)
 	})
-	aesKey = aesSecretKeyBackup
+	keys = aesKeyPairsBackup
 }
 
 func TestDecryptionAES(t *testing.T) {
@@ -74,7 +87,7 @@ func TestDecryptionAES(t *testing.T) {
 	tests := []testCaseEncryption{
 		{
 			name:     "Decryption Success",
-			input:    "y/hNE1N17iIxSqvM0IWidQ==",
+			input:    "ldQtpqnEQarFB3RK1JMqSA==",
 			expected: "1234567890121",
 		},
 		{
@@ -98,7 +111,7 @@ func TestDecryptionAES(t *testing.T) {
 			input := test.input
 			expected := test.expected
 
-			d := NewAESEncryption(aesKey, aesIV)
+			d := NewAESEncryption(keys)
 			actual, _ := d.Decrypt(input)
 
 			require.Equal(t, expected, actual)
@@ -107,17 +120,17 @@ func TestDecryptionAES(t *testing.T) {
 
 	setAValidConfig()
 	// Fail Case
-	aesSecretKeyBackup := aesKey
+	aesKeyPairsBackup := keys
 	t.Run("Fail Case", func(t *testing.T) {
-		aesKey = []byte("")
+		keys = KeyPairs{}
 		input := "smtg"
 
-		d := NewAESEncryption(aesKey, aesIV)
+		d := NewAESEncryption(keys)
 		_, err := d.Decrypt(input)
 
 		require.Error(t, err)
 	})
-	aesKey = aesSecretKeyBackup
+	keys = aesKeyPairsBackup
 }
 
 func TestPkcs7Unpad(t *testing.T) {
@@ -171,7 +184,7 @@ func TestPkcs7Unpad(t *testing.T) {
 			expected := test.expected
 			expectedErr := test.expectedErr
 
-			d := NewAESEncryption(aesKey, aesIV)
+			d := NewAESEncryption(keys)
 			actual, actualErr := d.pkcs7Unpad(inputByte, inputBlocksize)
 
 			require.Equal(t, expected, actual)
@@ -210,7 +223,7 @@ func TestPkcs7Pad(t *testing.T) {
 			expected := test.expected
 			expectedErr := test.expectedErr
 
-			d := NewAESEncryption(aesKey, aesIV)
+			d := NewAESEncryption(keys)
 			actual, actualErr := d.pkcs7Pad(inputByte, inputBlocksize)
 
 			require.Equal(t, expected, actual)

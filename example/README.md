@@ -29,6 +29,10 @@ Alternative mermaid diagrams
 
 ## 🏷 Versions
 
+v0.2.0
+
+- Using 2-key pair for better securities
+
 v0.1.0
 
 - Initialized

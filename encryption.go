@@ -27,20 +27,18 @@ type AES interface {
 }
 
 type DefaultAESEncryption struct {
-	key    []byte
-	iv     []byte
+	keys   KeyPairs
 	logger logger
 }
 
-func NewAESEncryption(key, iv []byte, debugMode ...bool) AES {
+func NewAESEncryption(keys KeyPairs, debugMode ...bool) AES {
 	isShowLog := false
 	if len(debugMode) > 0 {
 		isShowLog = bool(debugMode[0])
 	}
 	logger := newLogger(isShowLog)
 	return &DefaultAESEncryption{
-		key:    key,
-		iv:     iv,
+		keys:   keys,
 		logger: logger,
 	}
 }
@@ -54,7 +52,7 @@ func (d *DefaultAESEncryption) Encrypt(plainText string) (string, error) {
 	}
 
 	byteText := []byte(plainText)
-	block, err := aes.NewCipher(d.key)
+	block, err := aes.NewCipher(d.keys.AESKeyForEncrypt)
 	if err != nil {
 		d.logger.printf("error", serviceName, err)
 		return "", err
@@ -65,7 +63,7 @@ func (d *DefaultAESEncryption) Encrypt(plainText string) (string, error) {
 
 	ciphertext := make([]byte, len(byteText))
 
-	bm := cipher.NewCBCEncrypter(block, d.iv)
+	bm := cipher.NewCBCEncrypter(block, d.keys.AESIVForEncrypt)
 	bm.CryptBlocks(ciphertext, byteText)
 
 	cipherText := base64.StdEncoding.EncodeToString(ciphertext)
@@ -81,14 +79,14 @@ func (d *DefaultAESEncryption) Decrypt(encryptedText string) (string, error) {
 		return "", nil
 	}
 	ciphertext, _ := base64.StdEncoding.DecodeString(encryptedText)
-	block, err := aes.NewCipher(d.key)
+	block, err := aes.NewCipher(d.keys.AESKeyForDecrypt)
 	if err != nil {
 		d.logger.printf("error", serviceName, err)
 		return "", err
 	}
 
 	defer recoveryCatch()
-	bm := cipher.NewCBCDecrypter(block, d.iv)
+	bm := cipher.NewCBCDecrypter(block, d.keys.AESIVForDecrypt)
 	bm.CryptBlocks(ciphertext, ciphertext)
 
 	out, err := d.pkcs7Unpad(ciphertext, aes.BlockSize)

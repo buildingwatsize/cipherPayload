@@ -14,7 +14,10 @@ CipherPayload middleware for Fiber that use AES Algorithm for encrypt and decryp
   - [Config](#config)
   - [Default Config](#default-config)
   - [Default Response](#default-response)
+  - [KeyPairs Property](#keypairs-property)
   - [Payload Template](#payload-template)
+    - [Request](#request)
+    - [Response](#response)
   - [Example Usage](#example-usage)
 
 ## Installation
@@ -45,14 +48,22 @@ After you initiate your Fiber app, you can use the following possibilities:
 ```go
 // Default middleware config
 app.Use(cipherPayload.New(cipherPayload.Config{
-  AESKey:    []byte("AES_KEY"),
-  AESIV:     []byte("AES_IV"),
+  KeyPairs: cipherPayload.KeyPairs{
+    AESKeyForEncrypt: []byte("AES_KEY_FOR_ENCRYPT"),
+    AESIVForEncrypt:  []byte("AES_IV_FOR_ENCRYPT"),
+    AESKeyForDecrypt: []byte("AES_KEY_FOR_DECRYPT"),
+    AESIVForDecrypt:  []byte("AES_IV_FOR_DECRYPT"),
+  },
 }))
 
 // Or extend your config for customization
 app.Use(cipherPayload.New(cipherPayload.Config{
-  AESKey:    []byte("AES_KEY"),
-  AESIV:     []byte("AES_IV"),
+  KeyPairs: cipherPayload.KeyPairs{
+    AESKeyForEncrypt: []byte("AES_KEY_FOR_ENCRYPT"),
+    AESIVForEncrypt:  []byte("AES_IV_FOR_ENCRYPT"),
+    AESKeyForDecrypt: []byte("AES_KEY_FOR_DECRYPT"),
+    AESIVForDecrypt:  []byte("AES_IV_FOR_DECRYPT"),
+  },
   AllowMethod: []string{"POST", "OPTIONS"},
   DebugMode: true,
 }))
@@ -68,11 +79,8 @@ type Config struct {
   // Optional. Default: nil
   Next func(c *fiber.Ctx) bool
 
-  // Required. Default: nil
-  AESKey []byte
-
-  // Required. Default: nil
-  AESIV []byte
+  // Required. Default: KeyPairs{}
+  KeyPairs KeyPairs
 
   // Optional. Default: ["OPTIONS", "POST", "PUT", "DELETE"]
   AllowMethod []string
@@ -96,8 +104,7 @@ type Config struct {
 ```go
 var ConfigDefault = Config{
   Next:   nil,
-  AESKey: nil,
-  AESIV:  nil,
+  KeyPairs: KeyPairs{},
   AllowMethod: []string{
     fiber.MethodOptions,
     fiber.MethodPost,
@@ -137,20 +144,30 @@ func InternalServerErrorResponse(c *fiber.Ctx, msg string) error { // 500
 }
 ```
 
-## Payload Template
+## KeyPairs Property
 
-```json
-{
-  "payload": "tpkWPEI6F/nfgUjjtwyKSUHhNwBF3fZilleEukZ5GRazPN4rbfuqOasHeNN3OpDG"
+```go
+type KeyPairs struct {
+  AESKeyForEncrypt []byte
+  AESIVForEncrypt  []byte
+  AESKeyForDecrypt []byte
+  AESIVForDecrypt  []byte
 }
 ```
 
-Note: Using
+## Payload Template
 
-- AES Key: `12345678901234567890123456789012`
-- AES IV: `1234567890123456`
+An example of payload template (see more how to work in [Example](./example))
 
-Which should be equal to
+### Request
+
+```json
+{
+  "payload": "FDp1Dl31zGx5nRXFNKihB+k3ly/L7HI9tlHycbKVRwhaf3RRdyFGviuntEZqst0/"
+}
+```
+
+which can be decrypt to:
 
 ```json
 {
@@ -158,6 +175,30 @@ Which should be equal to
   "lastname": "Chimdee"
 }
 ```
+
+### Response
+
+```json
+{
+  "payload": "tpkWPEI6F/nfgUjjtwyKSUf1erxPL6rQt8jG3RitQ1KpvRALfR5YAgQ0CXYkrwLfTid6VdK3SNlffuu/kvI7Hj7br0ur01TUFUWxQ9cl+8U="
+}
+```
+
+which encrypted from:
+
+```json
+{
+  "firstname": "Chinnawat [Modified]",
+  "lastname": "Chimdee [Modified]"
+}
+```
+
+Note: This payload using
+
+- AESKeyForEncrypt (used in encrypting response body): `67890123456789012345678901234567`
+- AESIVForEncrypt (used in encrypting response body): `6789012345678901`
+- AESKeyForDecrypt (used in decrypting request body): `12345678901234567890123456789012`
+- AESIVForDecrypt (used in decrypting request body): `1234567890123456`
 
 ## Example Usage
 

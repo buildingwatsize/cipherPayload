@@ -10,18 +10,17 @@ import (
 )
 
 var (
-	aesSecretKey   []byte
-	aesSecretIV    []byte
-	myJSONResponse map[string]interface{}
+	aesSecretKeyForEncrypt []byte
+	aesSecretIVForEncrypt  []byte
+	aesSecretKeyForDecrypt []byte
+	aesSecretIVForDecrypt  []byte
 )
 
 func init() {
-	aesSecretKey = []byte("12345678901234567890123456789012")
-	aesSecretIV = []byte("1234567890123456")
-	myJSONResponse = fiber.Map{
-		"firstname": "Chinnawat",
-		"lastname":  "Chimdee",
-	}
+	aesSecretKeyForEncrypt = []byte("12345678901234567890123456789012")
+	aesSecretIVForEncrypt = []byte("1234567890123456")
+	aesSecretKeyForDecrypt = []byte("67890123456789012345678901234567")
+	aesSecretIVForDecrypt = []byte("6789012345678901")
 
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -40,8 +39,12 @@ func main() {
 	// =============================
 	appCipher := fiber.New()
 	appCipher.Use(cipherPayload.New(cipherPayload.Config{
-		AESKey:    aesSecretKey,
-		AESIV:     aesSecretIV,
+		KeyPairs: cipherPayload.KeyPairs{
+			AESKeyForEncrypt: aesSecretKeyForEncrypt,
+			AESIVForEncrypt:  aesSecretIVForEncrypt,
+			AESKeyForDecrypt: aesSecretKeyForDecrypt,
+			AESIVForDecrypt:  aesSecretIVForDecrypt,
+		},
 		DebugMode: true,
 	}))
 	apiCipherGroup := appCipher.Group("/api", nextHandlerAPI) // /api
@@ -61,13 +64,25 @@ var nextHandlerAPI = func(c *fiber.Ctx) error {
 }
 
 var HandlerExamplePlaintext = func(c *fiber.Ctx) error {
-	log.Info().Msg("Called HandlerExample")
+	log.Info().Msg("Called HandlerExamplePlaintext")
 
-	return c.Status(fiber.StatusOK).JSON(myJSONResponse)
+	var reqBody map[string]interface{}
+	_ = c.BodyParser(&reqBody)
+	for k, v := range reqBody {
+		reqBody[k] = fmt.Sprintf("%v [Modified]", v)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(reqBody)
 }
 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// === YOU SEE ? HOW IT DIFFERENCE ? ===
+// :: PS. the "Plaintext Way" and the "Cipher Way"
+//        can be used the same handler ::
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
 var HandlerExampleCipher = func(c *fiber.Ctx) error {
-	log.Info().Msg("Called HandlerExample")
+	log.Info().Msg("Called HandlerExampleCipher")
 
 	var reqBody map[string]interface{}
 	_ = c.BodyParser(&reqBody)
