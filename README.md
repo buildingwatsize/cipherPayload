@@ -89,7 +89,7 @@ type Config struct {
   DebugMode bool
 
   // Optional. Default: true
-  IncludeHealthAPI bool
+  ExcludeHealthAPI bool
 
   // Optional. Default: BadRequestResponse
   FailResponse func(c *fiber.Ctx, msg string) error
@@ -112,7 +112,7 @@ var ConfigDefault = Config{
     fiber.MethodDelete,
   },
   DebugMode:        false,
-  IncludeHealthAPI: true,
+  ExcludeHealthAPI: true,
   FailResponse:     BadRequestResponse,
   ErrorResponse:    InternalServerErrorResponse,
 }
