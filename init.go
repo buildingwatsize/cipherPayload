@@ -58,9 +58,13 @@ func New(config ...Config) fiber.Handler {
 		var reqBody PayloadBody
 		err := c.BodyParser(&reqBody)
 		if err != nil || reqBody.Payload == "" {
-			errMsg := "Invalid Payload"
-			logger.printf("error", errMsg, string(c.Request().Body()))
-			return cfg.FailResponse(c, errMsg)
+			errMsg := "Error or Empty Payload"
+			if cfg.StrictMode {
+				errMsg := "Invalid Payload"
+				logger.printf("error", errMsg, string(c.Request().Body()))
+				return cfg.FailResponse(c, errMsg)
+			}
+			logger.printf("info", errMsg, string(c.Request().Body()))
 		}
 		logger.printf("debug", "Request:", reqBody.Payload)
 

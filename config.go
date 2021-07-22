@@ -17,6 +17,9 @@ type Config struct {
 	// Optional. Default: false
 	DebugMode bool
 
+	// Optional. [Default: false]
+	StrictMode bool
+
 	// Optional. Default: true
 	ExcludeHealthAPI bool
 
@@ -37,6 +40,7 @@ var ConfigDefault = Config{
 		fiber.MethodDelete,
 	},
 	DebugMode:        false,
+	StrictMode:       false,
 	ExcludeHealthAPI: true,
 	FailResponse:     BadRequestResponse,
 	ErrorResponse:    InternalServerErrorResponse,
@@ -56,8 +60,9 @@ func configDefault(config ...Config) Config {
 		cfg.AllowMethod = ConfigDefault.AllowMethod
 	}
 
-	// Note: cfg.DebugMode: it's false as default.
-	// NOTE: cfg.ExcludeHealthAPI: it's true as default
+	// Note: cfg.DebugMode: it's false by default.
+	// Note: cfg.StrictMode: it's false by default.
+	// NOTE: cfg.ExcludeHealthAPI: it's true by default
 
 	// set default values
 	if cfg.FailResponse == nil {
