@@ -27,3 +27,10 @@ content-type: application/json
 # ...Should reply: { "payload": "Y1E19OBvnC+IRwwdrGsVxfI0rvQ8sfkqFtlL0D5NHfauEddy13a9YWEwJeSfC1iiwjPHOwkfb/VVLKw12E1KDQ==" }
 # ...Which means: {\"key\":\"tax_id [Modified]\",\"value\":\"1234567890121 [Modified]\"}
 # {"payload": "Be/0wN/7rRLYMONwySAWH0NfSNckuaYXsmb1JgZDFRsNnum+2JGnMTxuNa3iECEe"}
+
+
+### EmptyPayload Example POST
+POST http://localhost:8000/api/example HTTP/1.1
+content-type: application/json
+
+{}

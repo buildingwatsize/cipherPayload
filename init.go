@@ -58,7 +58,7 @@ func New(config ...Config) fiber.Handler {
 		var reqBody PayloadBody
 		err := c.BodyParser(&reqBody)
 		if err != nil || reqBody.Payload == "" {
-			errMsg := "Error or Empty Payload"
+			errMsg := "BodyParser error or Empty Payload"
 			if cfg.StrictMode {
 				errMsg := "Invalid Payload"
 				logger.printf("error", errMsg, string(c.Request().Body()))
@@ -72,11 +72,13 @@ func New(config ...Config) fiber.Handler {
 		encrypterDecrypter := NewAESEncryption(cfg.KeyPairs, cfg.DebugMode)
 		decryptedPayload, err := encrypterDecrypter.Decrypt(reqBody.Payload)
 		logger.printf("debug", "Decrypted:", decryptedPayload)
-
 		if err != nil || decryptedPayload == "" {
-			logger.printf("error", serviceName, err)
-			errMsg := "Cannot decrypt payload or invalid payload"
-			return cfg.FailResponse(c, errMsg)
+			errMsg := "Payload decrypt fail or Empty payload"
+			if cfg.StrictMode {
+				logger.printf("error", serviceName, err)
+				return cfg.FailResponse(c, errMsg)
+			}
+			logger.printf("info", errMsg)
 		}
 
 		jsonRaw := json.RawMessage(decryptedPayload)

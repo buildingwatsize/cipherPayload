@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+
+- [Fixed] Bug on missing check strict mode when decrypted
+
 ## v0.4.0
 
 - [Added] Configuration `StrictMode` can be set `false` for supporting empty payload and can be set `true` to required the payload `Note: default is false`
