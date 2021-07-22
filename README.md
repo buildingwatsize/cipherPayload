@@ -88,6 +88,9 @@ type Config struct {
   // Optional. Default: false
   DebugMode bool
 
+  // Optional. [Default: false]
+  StrictMode bool
+
   // Optional. Default: true
   ExcludeHealthAPI bool
 
@@ -112,6 +115,7 @@ var ConfigDefault = Config{
     fiber.MethodDelete,
   },
   DebugMode:        false,
+  StrictMode:       false,
   ExcludeHealthAPI: true,
   FailResponse:     BadRequestResponse,
   ErrorResponse:    InternalServerErrorResponse,
