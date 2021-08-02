@@ -207,3 +207,7 @@ Note: This payload using
 ## Example Usage
 
 Please go to [example/README.md](./example/README.md)
+
+## [NEW!] AES Encryption Tools (useful for debugging)
+
+https://buildingwatsize.github.io/encrypt-tools/encrypt
